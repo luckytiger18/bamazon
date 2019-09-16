@@ -13,13 +13,13 @@ CREATE TABLE IF NOT EXISTS products (
 
 INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES 
 ('shoes', 'clothing', 10, 5),
-('mascara', 'beauty', 10.5, 5),
-('socks', 'clothing', 20.5, 5),
+('mascara', 'beauty', 10.50, 5),
+('socks', 'clothing', 20.50, 5),
 ('jacket', 'clothing', 50, 10),
 ('shorts', 'clothing', 20, 20),
 ('jeans', 'clothing', 100, 50),
 ('shirts', 'clothing', 15, 50),
-('lip stick', 'beauty', 10.5, 5),
+('lip stick', 'beauty', 10.50, 5),
 ('video game', 'electronics', 60, 100),
 ('computer', 'electronics', 500, 50);
 

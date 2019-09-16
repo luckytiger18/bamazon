@@ -24,26 +24,21 @@ function allProducts() {
 }
 
 function buyProducts(product_id, buy_qty) {
-    connection.query('SELECT stock_quantity from products WHERE id = ?', [product_id], function (error, results, fields) {
+    connection.query('SELECT stock_quantity, price from products WHERE id = ?', [product_id], function (error, results, fields) {
         for (var i = 0; i < results.length; i++) {
-            console.log(results[i].stock_quantity)
             if (results[i].stock_quantity >= buy_qty) {
-                console.log("you pay....")
-                updateProductName(results[i].stock_quantity - buy_qty, product_id)
+                console.log("you pay:")
+                updateProductStock(results[i].stock_quantity - buy_qty, product_id)
+                console.log("$" + (parseFloat(results[i].price * buy_qty).toFixed(2)));
             } else {
-                console.log("Insufficient quantity!")
+                console.log("Insufficient quantity!");
             }
-
         }
-
     })
 }
-function updateProductName(stock_quantity, product_id) {
+function updateProductStock(stock_quantity, product_id) {
     connection.query('UPDATE products SET stock_quantity = ? WHERE id = ?', [stock_quantity, product_id], function (error, results, fields) {
         if (error) throw error;
-
-        console.log(results);
-
     });
 }
 
