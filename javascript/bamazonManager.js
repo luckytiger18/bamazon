@@ -15,8 +15,8 @@ connection.connect();
 function viewProducts() {
     connection.query('SELECT id, product_name, price, stock_quantity FROM products', function (error, results, fields) {
         if (error) throw error;
-        console.log('-----allProducts();----')
-        console.log(results);
+        console.log('-----All Products----')
+        console.table(results);
 
     });
 }
@@ -47,7 +47,7 @@ function addNewProduct() {
             },
             {
                 type: "input",
-                message: "How many items?",
+                message: "How many does this item have?",
                 name: "stock_quantity"
             },
         ])
@@ -57,13 +57,39 @@ function addNewProduct() {
         });
 }
 
-function addToInventory() {
-    connection.query('SELECT id, product_name, price, stock_quantity FROM products', function (error, results, fields) {
-        if (error) throw error;
-        console.log('-----allProducts();----')
-        console.log(results);
+function addToInventory(id_name, stock_quantity) {
+    var totalInventory = 0;
 
-    });
+    connection.query('SELECT * from products WHERE id = ?', [id_name], function (error, results, fields) {
+        totalInventory += parseInt(stock_quantity) + parseInt(results[0].stock_quantity);
+
+
+        console.log(totalInventory)
+        connection.query('UPDATE products set stock_quantity = ? WHERE id = ?', [totalInventory, id_name], function (error, results, fields) {
+            if (error) throw error;
+
+        });
+    })
+}
+function addInventoryPrompt() {
+    inquirer
+        .prompt([
+
+            {
+                type: "input",
+                message: "What is the items ID?",
+                name: "id_name"
+            },
+            {
+                type: "input",
+                message: "How many items do you want to add?",
+                name: "stock_quantity"
+            },
+        ])
+        .then(function (resp) {
+            addToInventory(resp.id_name, resp.stock_quantity);
+            console.log("updated")
+        });
 }
 
 function managerPrompt() {
@@ -91,13 +117,13 @@ function managerPrompt() {
                     break;
                 case "Add to Inventory":
                     // code block'
-                    addToInventory();
-                    console.log('do this')
+                    addInventoryPrompt();
+                    viewProducts();
                     break;
                 case "Add New Product":
                     // code block
                     addNewProduct();
-                    
+
                     break;
                 case "quit":
                     console.log('later');
