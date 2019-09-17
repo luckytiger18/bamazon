@@ -36,7 +36,7 @@ function buyProducts(product_id, buy_qty) {
         }
     })
 }
-function updateProductStock(stock_quantity, product_id) {
+function updateInventory(stock_quantity, product_id) {
     connection.query('UPDATE products SET stock_quantity = ? WHERE id = ?', [stock_quantity, product_id], function (error, results, fields) {
         if (error) throw error;
     });
