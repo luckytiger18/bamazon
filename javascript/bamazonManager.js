@@ -17,14 +17,25 @@ function viewProducts() {
         if (error) throw error;
         console.log('-----All Products----')
         console.table(results);
-
+        
     });
+    // managerPrompt();
 }
+function viewLowProducts() {
+    connection.query('SELECT id, product_name, price, stock_quantity FROM products where stock_quantity <= 5', function (error, results, fields) {
+        if (error) throw error;
+        console.log('-----All Products----')
+        console.table(results);
+    });
+    managerPrompt(); 
+}
+
 
 function updateNewProduct(product_name, department_name, price, stock_quantity) {
     connection.query('INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)', [product_name, department_name, price, stock_quantity], function (error, results, fields) {
         if (error) throw error;
     });
+    managerPrompt();
 }
 function addNewProduct() {
     inquirer
@@ -53,7 +64,7 @@ function addNewProduct() {
         ])
         .then(function (resp) {
             updateNewProduct(resp.products_name, resp.department_name, resp.item_price, resp.stock_quantity);
-            console.log("updated")
+            console.log("Added new product")
         });
 }
 
@@ -63,18 +74,17 @@ function addToInventory(id_name, stock_quantity) {
     connection.query('SELECT * from products WHERE id = ?', [id_name], function (error, results, fields) {
         totalInventory += parseInt(stock_quantity) + parseInt(results[0].stock_quantity);
 
-
         console.log(totalInventory)
         connection.query('UPDATE products set stock_quantity = ? WHERE id = ?', [totalInventory, id_name], function (error, results, fields) {
             if (error) throw error;
 
         });
     })
+    viewProducts();
 }
 function addInventoryPrompt() {
     inquirer
         .prompt([
-
             {
                 type: "input",
                 message: "What is the items ID?",
@@ -85,17 +95,21 @@ function addInventoryPrompt() {
                 message: "How many items do you want to add?",
                 name: "stock_quantity"
             },
+            
         ])
         .then(function (resp) {
-            addToInventory(resp.id_name, resp.stock_quantity);
+            addToInventory(resp.id_name, resp.stock_quantity, resp.what_to_do); // what_to_do will not go anywhere once the buttons are selected. 
             console.log("updated")
+            managerPrompt()
         });
+}
+function quitApplication() {
+    connection.end()
 }
 
 function managerPrompt() {
     inquirer
         .prompt([
-
             {
                 type: "list",
                 message: "what do you want to do?",
@@ -104,35 +118,48 @@ function managerPrompt() {
             },
         ])
         .then(function (resp) {
-            switch (resp.what_to_do) {
-                case "View Products for Sale":
-                    viewProducts();
-                case "insert a car":
-                    insertCarPrompt();
-                    break;
-                case "View Low Inventory":
-                    // code block
-                    // console.log('do this')
-                    console.log('do this')
-                    break;
-                case "Add to Inventory":
-                    // code block'
-                    addInventoryPrompt();
-                    viewProducts();
-                    break;
-                case "Add New Product":
-                    // code block
-                    addNewProduct();
+            if (resp.what_to_do == "View Products for Sale"){
+                viewProducts();
+                managerPrompt();
+            }else if(resp.what_to_do == "View Low Inventory"){
+                viewLowProducts();
+                managerPrompt();
+            }else if (resp.what_to_do == "Add to Inventory"){
+                addInventoryPrompt();
+                viewProducts();
+            }else if (resp.what_to_do == "Add New Product"){
+                addNewProduct();
 
-                    break;
-                case "quit":
-                    console.log('later');
-                    break;
-                default:
-                    // code block
-                    connection.end();
-                    break;
+            }else if (resp.what_to_do == "quit"){
+                quitApplication();
             }
+            // switch (resp.what_to_do) {
+            //     case "View Products for Sale":
+            //         viewProducts();
+            //     case "View Low Inventory":
+            //         // code block
+            //         // console.log('do this')
+            //         viewLowProducts();
+            //         managerPrompt();
+            //         break;
+            //     case "Add to Inventory":
+            //         // code block'
+            //         addInventoryPrompt();
+            //         viewProducts();
+            //         //managerPrompt();
+            //         break;
+            //     case "Add New Product":
+            //         // code block
+            //         addNewProduct();
+            //         break;
+            //     case "quit":
+            //         quitApplication();
+            //         break;
+            //     default:
+            //         // code block
+            //         connection.end();
+            //         break;
+            // }
         });
 }
 managerPrompt()

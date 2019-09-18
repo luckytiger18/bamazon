@@ -18,7 +18,7 @@ function allProducts() {
         console.log('---------')
         console.log('---------')
         console.log('-----allProducts();----')
-        console.log(results);
+        console.table(results);
         console.log('---------')
     });
 }
@@ -28,8 +28,8 @@ function buyProducts(product_id, buy_qty) {
         for (var i = 0; i < results.length; i++) {
             if (results[i].stock_quantity >= buy_qty) {
                 console.log("you pay:")
-                updateProductStock(results[i].stock_quantity - buy_qty, product_id)
-                console.log("$" + (parseFloat(results[i].price * buy_qty).toFixed(2)));
+                updateProductStock = results[i].stock_quantity - buy_qty, product_id;
+                console.table("$" + (parseFloat(results[i].price * buy_qty).toFixed(2)));
             } else {
                 console.log("Insufficient quantity!");
             }
